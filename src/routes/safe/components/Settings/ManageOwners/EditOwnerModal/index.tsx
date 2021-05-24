@@ -18,6 +18,7 @@ import { makeAddressBookEntry } from 'src/logic/addressBook/model/addressBook'
 import { addressBookAddOrUpdate } from 'src/logic/addressBook/store/actions'
 import { NOTIFICATIONS } from 'src/logic/notifications'
 import enqueueSnackbar from 'src/logic/notifications/store/actions/enqueueSnackbar'
+import { checksumAddress } from '../../../../../../utils/checksumAddress'
 
 import { styles } from './style'
 import { getExplorerInfo } from 'src/config'
@@ -42,7 +43,14 @@ export const EditOwnerModal = ({ isOpen, onClose, ownerAddress, selectedOwnerNam
   const handleSubmit = ({ ownerName }: { ownerName: string }): void => {
     // Update the value only if the ownerName really changed
     if (ownerName !== selectedOwnerName) {
-      dispatch(addressBookAddOrUpdate(makeAddressBookEntry({ address: ownerAddress, name: ownerName })))
+      dispatch(
+        addressBookAddOrUpdate(
+          makeAddressBookEntry({
+            address: checksumAddress(ownerAddress),
+            name: ownerName,
+          }),
+        ),
+      )
       dispatch(enqueueSnackbar(NOTIFICATIONS.OWNER_NAME_CHANGE_EXECUTED_MSG))
     }
     onClose()

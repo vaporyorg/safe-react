@@ -1,5 +1,11 @@
-import { getWeb3 } from 'src/logic/wallets/getWeb3'
+import { web3ReadOnly } from 'src/logic/wallets/getWeb3'
 
-export const checksumAddress = (address: string): string => {
-  return getWeb3().utils.toChecksumAddress(address)
+export class ChecksumAddress extends String {
+  private readonly checksummed = true
+
+  constructor(address: string) {
+    super(web3ReadOnly.utils.toChecksumAddress(address))
+  }
 }
+
+export const checksumAddress = (address: string): ChecksumAddress => new ChecksumAddress(address)

@@ -46,11 +46,11 @@ const Balances = (): ReactElement => {
   const classes = useStyles()
   const [state, setState] = useState(INITIAL_STATE)
 
-  const address = useSelector(safeParamAddressFromStateSelector)
+  const safeAddress = useSelector(safeParamAddressFromStateSelector)
   const featuresEnabled = useSelector(safeFeaturesEnabledSelector)
-  const safeName = useSafeName(address)
+  const safeName = useSafeName(safeAddress)
 
-  useFetchTokens(address)
+  useFetchTokens(safeAddress)
 
   useEffect(() => {
     const erc721Enabled = Boolean(featuresEnabled?.includes(FEATURES.ERC721))
@@ -97,7 +97,7 @@ const Balances = (): ReactElement => {
       <Row align="center" className={controls}>
         <Col className={assetTabs} sm={6} start="sm" xs={12}>
           <NavLink
-            to={`${SAFELIST_ADDRESS}/${address}/balances`}
+            to={`${SAFELIST_ADDRESS}/${safeAddress}/balances`}
             activeClassName={assetTabActive}
             className={assetTab}
             data-testid={'coins-assets-btn'}
@@ -109,7 +109,7 @@ const Balances = (): ReactElement => {
             <>
               <Divider className={assetDivider} />
               <NavLink
-                to={`${SAFELIST_ADDRESS}/${address}/balances/collectibles`}
+                to={`${SAFELIST_ADDRESS}/${safeAddress}/balances/collectibles`}
                 activeClassName={assetTabActive}
                 className={assetTab}
                 data-testid={'collectibles-assets-btn'}
@@ -122,14 +122,14 @@ const Balances = (): ReactElement => {
         </Col>
         <Switch>
           <Route
-            path={`${SAFELIST_ADDRESS}/${address}/balances/collectibles`}
+            path={`${SAFELIST_ADDRESS}/${safeAddress}/balances/collectibles`}
             exact
             render={() => {
-              return !erc721Enabled ? <Redirect to={`${SAFELIST_ADDRESS}/${address}/balances`} /> : null
+              return !erc721Enabled ? <Redirect to={`${SAFELIST_ADDRESS}/${safeAddress}/balances`} /> : null
             }}
           />
           <Route
-            path={`${SAFELIST_ADDRESS}/${address}/balances`}
+            path={`${SAFELIST_ADDRESS}/${safeAddress}/balances`}
             exact
             render={() => {
               return (
@@ -145,7 +145,7 @@ const Balances = (): ReactElement => {
       </Row>
       <Switch>
         <Route
-          path={`${SAFELIST_ADDRESS}/${address}/balances/collectibles`}
+          path={`${SAFELIST_ADDRESS}/${safeAddress}/balances/collectibles`}
           exact
           render={() => {
             if (erc721Enabled) {
@@ -155,7 +155,7 @@ const Balances = (): ReactElement => {
           }}
         />
         <Route
-          path={`${SAFELIST_ADDRESS}/${address}/balances`}
+          path={`${SAFELIST_ADDRESS}/${safeAddress}/balances`}
           render={() => {
             return wrapInSuspense(<Coins showReceiveFunds={() => onShow('Receive')} showSendFunds={showSendFunds} />)
           }}
@@ -174,7 +174,7 @@ const Balances = (): ReactElement => {
         paperClassName="receive-modal"
         title="Receive Tokens"
       >
-        <ReceiveModal safeAddress={address} safeName={safeName} onClose={() => onHide('Receive')} />
+        <ReceiveModal safeAddress={safeAddress} safeName={safeName} onClose={() => onHide('Receive')} />
       </Modal>
     </>
   )

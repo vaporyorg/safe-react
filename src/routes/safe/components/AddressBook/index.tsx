@@ -114,20 +114,34 @@ const AddressBookTable = (): ReactElement => {
     }
   }, [addressBook, entryAddressToEditOrCreateNew])
 
-  const newEntryModalHandler = (entry: AddressBookEntry) => {
+  const newEntryModalHandler = ({ address, ...entry }: AddressBookEntry): void => {
+    try {
+      address = checksumAddress(address)
+    } catch (error) {
+      console.error('ADDRESS - failed to checksum address', error.message)
+      return
+    }
+
     // close the modal
     setEditCreateEntryModalOpen(false)
     // update the store
-    dispatch(addressBookAddOrUpdate(makeAddressBookEntry(entry)))
+    dispatch(addressBookAddOrUpdate(makeAddressBookEntry({ address, ...entry })))
   }
 
-  const editEntryModalHandler = (entry: AddressBookEntry) => {
+  const editEntryModalHandler = ({ address, ...entry }: AddressBookEntry): void => {
+    try {
+      address = checksumAddress(address)
+    } catch (error) {
+      console.error('ADDRESS - failed to checksum address', error.message)
+      return
+    }
+
     // reset the form
     setSelectedEntry(initialEntryState)
     // close the modal
     setEditCreateEntryModalOpen(false)
     // update the store
-    dispatch(addressBookAddOrUpdate(makeAddressBookEntry(entry)))
+    dispatch(addressBookAddOrUpdate(makeAddressBookEntry({ address, ...entry })))
   }
 
   const deleteEntryModalHandler = () => {

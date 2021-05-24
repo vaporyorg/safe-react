@@ -2,14 +2,13 @@ import axios, { AxiosResponse } from 'axios'
 
 import { getSafeClientGatewayBaseUrl } from 'src/config'
 import { HistoryGatewayResponse, QueuedGatewayResponse } from 'src/logic/safe/store/models/types/gateway'
-import { checksumAddress } from 'src/utils/checksumAddress'
+import { ChecksumAddress, checksumAddress } from 'src/utils/checksumAddress'
 
 /*************/
 /*  HISTORY  */
 /*************/
-const getHistoryTransactionsUrl = (safeAddress: string): string => {
-  const address = checksumAddress(safeAddress)
-  return `${getSafeClientGatewayBaseUrl(address)}/transactions/history/`
+const getHistoryTransactionsUrl = (safeAddress: ChecksumAddress): string => {
+  return `${getSafeClientGatewayBaseUrl(safeAddress)}/transactions/history/`
 }
 
 const historyPointers: { [safeAddress: string]: { next: string | null; previous: string | null } } = {}
@@ -17,38 +16,42 @@ const historyPointers: { [safeAddress: string]: { next: string | null; previous:
 /**
  * Fetch next page if there is a next pointer for the safeAddress.
  * If the fetch was success, updates the pointers.
- * @param {string} safeAddress
+ * @param {ChecksumAddress} safeAddress
  */
 export const loadPagedHistoryTransactions = async (
-  safeAddress: string,
+  safeAddress: ChecksumAddress,
 ): Promise<{ values: HistoryGatewayResponse['results']; next: string | null } | undefined> => {
-  // if `historyPointers[safeAddress] is `undefined` it means `loadHistoryTransactions` wasn't called
-  // if `historyPointers[safeAddress].next is `null`, it means it reached the last page in gateway-client
-  if (!historyPointers[safeAddress]?.next) {
+  const address = safeAddress.toString()
+  // if `historyPointers[address] is `undefined` it means `loadHistoryTransactions` wasn't called
+  // if `historyPointers[address].next is `null`, it means it reached the last page in gateway-client
+  if (!historyPointers[address]?.next) {
     return
   }
 
   const {
     data: { results, ...pointers },
   } = await axios.get<HistoryGatewayResponse, AxiosResponse<HistoryGatewayResponse>>(
-    historyPointers[safeAddress].next as string,
+    historyPointers[address].next as string,
   )
 
-  historyPointers[safeAddress] = pointers
+  historyPointers[address] = pointers
 
-  return { values: results, next: historyPointers[safeAddress].next }
+  return { values: results, next: historyPointers[address].next }
 }
 
-export const loadHistoryTransactions = async (safeAddress: string): Promise<HistoryGatewayResponse['results']> => {
+export const loadHistoryTransactions = async (
+  safeAddress: ChecksumAddress,
+): Promise<HistoryGatewayResponse['results']> => {
   const historyTransactionsUrl = getHistoryTransactionsUrl(safeAddress)
+  const address = safeAddress.toString()
 
   try {
     const {
       data: { results, ...pointers },
     } = await axios.get<HistoryGatewayResponse, AxiosResponse<HistoryGatewayResponse>>(historyTransactionsUrl)
 
-    if (!historyPointers[safeAddress]) {
-      historyPointers[safeAddress] = pointers
+    if (!historyPointers[address]) {
+      historyPointers[address] = pointers
     }
 
     return results
@@ -59,16 +62,15 @@ export const loadHistoryTransactions = async (safeAddress: string): Promise<Hist
       return []
     }
 
-    throw Error(`There was an error trying to fetch history txs from safeAddress ${safeAddress}`)
+    throw Error(`There was an error trying to fetch history txs from safeAddress ${address}`)
   }
 }
 
 /************/
 /*  QUEUED  */
 /************/
-const getQueuedTransactionsUrl = (safeAddress: string): string => {
-  const address = checksumAddress(safeAddress)
-  return `${getSafeClientGatewayBaseUrl(address)}/transactions/queued/`
+const getQueuedTransactionsUrl = (safeAddress: ChecksumAddress): string => {
+  return `${getSafeClientGatewayBaseUrl(safeAddress)}/transactions/queued/`
 }
 
 const queuedPointers: { [safeAddress: string]: { next: string | null; previous: string | null } } = {}
@@ -76,37 +78,42 @@ const queuedPointers: { [safeAddress: string]: { next: string | null; previous: 
 /**
  * Fetch next page if there is a next pointer for the safeAddress.
  * If the fetch was success, updates the pointers.
- * @param {string} safeAddress
+ * @param {ChecksumAddress} safeAddress
  */
 export const loadPagedQueuedTransactions = async (
-  safeAddress: string,
+  safeAddress: ChecksumAddress,
 ): Promise<{ values: QueuedGatewayResponse['results']; next: string | null } | undefined> => {
-  // if `queuedPointers[safeAddress] is `undefined` it means `loadHistoryTransactions` wasn't called
-  // if `queuedPointers[safeAddress].next is `null`, it means it reached the last page in gateway-client
-  if (!queuedPointers[safeAddress]?.next) {
+  const address = safeAddress.toString()
+  // if `queuedPointers[address] is `undefined` it means `loadHistoryTransactions` wasn't called
+  // if `queuedPointers[address].next is `null`, it means it reached the last page in gateway-client
+  if (!queuedPointers[address]?.next) {
     return
   }
 
   const {
     data: { results, ...pointers },
   } = await axios.get<QueuedGatewayResponse, AxiosResponse<QueuedGatewayResponse>>(
-    queuedPointers[safeAddress].next as string,
+    queuedPointers[address].next as string,
   )
 
-  queuedPointers[safeAddress] = pointers
+  queuedPointers[address] = pointers
 
-  return { values: results, next: queuedPointers[safeAddress].next }
+  return { values: results, next: queuedPointers[address].next }
 }
 
-export const loadQueuedTransactions = async (safeAddress: string): Promise<QueuedGatewayResponse['results']> => {
+export const loadQueuedTransactions = async (
+  safeAddress: ChecksumAddress,
+): Promise<QueuedGatewayResponse['results']> => {
   const queuedTransactionsUrl = getQueuedTransactionsUrl(safeAddress)
+  const address = safeAddress.toString()
+
   try {
     const {
       data: { results, ...pointers },
     } = await axios.get<QueuedGatewayResponse, AxiosResponse<QueuedGatewayResponse>>(queuedTransactionsUrl)
 
-    if (!queuedPointers[safeAddress] || queuedPointers[safeAddress].next === null) {
-      queuedPointers[safeAddress] = pointers
+    if (!queuedPointers[address] || queuedPointers[address].next === null) {
+      queuedPointers[address] = pointers
     }
 
     return results
@@ -117,6 +124,6 @@ export const loadQueuedTransactions = async (safeAddress: string): Promise<Queue
       return []
     }
 
-    throw Error(`There was an error trying to fetch queued txs from safeAddress ${safeAddress}`)
+    throw Error(`There was an error trying to fetch queued txs from safeAddress ${address}`)
   }
 }

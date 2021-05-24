@@ -23,8 +23,8 @@ export const buildSafe = async (safeAddress: string): Promise<SafeRecordProps> =
   const safeInfo: Partial<SafeRecordProps> = { address }
 
   const [remote, localSafeInfo] = await allSettled<[SafeInfo | null, SafeRecordProps | undefined | null]>(
-    getSafeInfo(safeAddress),
-    getLocalSafe(safeAddress),
+    getSafeInfo(address),
+    getLocalSafe(address),
   )
 
   // remote (client-gateway)

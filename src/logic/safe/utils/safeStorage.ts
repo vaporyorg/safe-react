@@ -1,5 +1,6 @@
 import { loadFromStorage, saveToStorage } from 'src/utils/storage'
 import { SafeRecordProps } from 'src/logic/safe/store/models/safe'
+import { ChecksumAddress } from 'src/utils/checksumAddress'
 
 export const SAFES_KEY = 'SAFES'
 export const DEFAULT_SAFE_KEY = 'DEFAULT_SAFE'
@@ -18,9 +19,9 @@ export const saveSafes = async (safes: StoredSafes): Promise<void> => {
   }
 }
 
-export const getLocalSafe = async (safeAddress: string): Promise<SafeRecordProps | undefined> => {
+export const getLocalSafe = async (safeAddress: ChecksumAddress): Promise<SafeRecordProps | undefined> => {
   const storedSafes = await loadStoredSafes()
-  return storedSafes?.[safeAddress]
+  return storedSafes?.[safeAddress.toString()]
 }
 
 export const getDefaultSafe = async (): Promise<string> => {

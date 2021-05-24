@@ -5,6 +5,7 @@ import { fetchSafeCollectibles } from 'src/logic/tokens/api'
 import { TokenResult } from 'src/logic/tokens/api/fetchErc20AndErc721AssetsList'
 import { CollectibleResult } from 'src/logic/tokens/api/fetchSafeCollectibles'
 import { TokenType } from 'src/logic/safe/store/models/types/gateway.d'
+import { ChecksumAddress } from '../../../utils/checksumAddress'
 
 type FetchResult = {
   erc721Assets: TokenResult[]
@@ -84,11 +85,11 @@ class Gnosis {
   /**
    * Fetches from OpenSea the list of collectibles, grouped by category,
    * for the provided Safe Address in the specified Network
-   * @param {string} safeAddress
+   * @param {ChecksumAddress} safeAddress
    * @returns {Promise<Collectibles>}
    */
-  async fetchCollectibles(safeAddress: string): Promise<Collectibles> {
-    const { erc721Assets, erc721Tokens } = await this._fetch(safeAddress)
+  async fetchCollectibles(safeAddress: ChecksumAddress): Promise<Collectibles> {
+    const { erc721Assets, erc721Tokens } = await this._fetch(safeAddress.toString())
 
     const nftTokens = Gnosis.extractTokens(erc721Tokens)
     const nftAssets = Gnosis.extractAssets(erc721Assets, nftTokens)

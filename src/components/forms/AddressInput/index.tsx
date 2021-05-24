@@ -58,7 +58,7 @@ const AddressInput = ({
           try {
             const resolverAddr = await getAddressFromDomain(address)
             const formattedAddress = checksumAddress(resolverAddr)
-            fieldMutator(formattedAddress)
+            fieldMutator(formattedAddress.toString())
           } catch (err) {
             console.error('Failed to resolve address for ENS name: ', err)
           }

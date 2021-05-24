@@ -5,10 +5,11 @@ import {
   addHistoryTransactions,
   addQueuedTransactions,
 } from 'src/logic/safe/store/actions/transactions/gatewayTransactions'
+import { ChecksumAddress } from '../../../../../../utils/checksumAddress'
 import { loadHistoryTransactions, loadQueuedTransactions } from './loadGatewayTransactions'
 import { AppReduxState } from 'src/store'
 
-export default (safeAddress: string) => async (
+export default (safeAddress: ChecksumAddress) => async (
   dispatch: ThunkDispatch<AppReduxState, undefined, AnyAction>,
 ): Promise<void> => {
   const [history, queued] = await Promise.allSettled([

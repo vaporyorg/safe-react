@@ -26,7 +26,7 @@ export const fetchTransactionDetails = ({
   })
   const safeAddress = safeParamAddressFromStateSelector(getState())
 
-  if (txDetails) {
+  if (txDetails || !safeAddress) {
     return
   }
 
@@ -34,7 +34,14 @@ export const fetchTransactionDetails = ({
     const url = getTxDetailsUrl(transactionId)
     const { data: transactionDetails } = await axios.get<ExpandedTxDetails, AxiosResponse<ExpandedTxDetails>>(url)
 
-    dispatch(updateTransactionDetails({ transactionId, txLocation, safeAddress, value: transactionDetails }))
+    dispatch(
+      updateTransactionDetails({
+        transactionId,
+        txLocation,
+        safeAddress: safeAddress.toString(),
+        value: transactionDetails,
+      }),
+    )
   } catch (error) {
     console.error(`Failed to retrieve transaction ${transactionId} details`, error.message)
   }

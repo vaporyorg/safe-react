@@ -4,6 +4,7 @@ import { ADDRESS_BOOK_DEFAULT_NAME, AddressBookEntry } from 'src/logic/addressBo
 import { getEntryIndex } from 'src/logic/addressBook/utils'
 import { AppReduxState } from 'src/store'
 import { Overwrite } from 'src/types/helpers'
+import { ChecksumAddress } from '../../../../utils/checksumAddress'
 
 export const addressBookSelector = (state: AppReduxState): AppReduxState['addressBook'] => state['addressBook']
 
@@ -20,7 +21,7 @@ export const addressBookMapSelector = createSelector(
 
     addressBook.forEach(({ address, name, chainId }) => {
       if (!addressBookMap[chainId]) {
-        addressBookMap[chainId] = { [address]: name }
+        addressBookMap[chainId] = { [address.toString()]: name }
       } else {
         addressBookMap[chainId][address] = name
       }
@@ -30,8 +31,9 @@ export const addressBookMapSelector = createSelector(
   },
 )
 
-export const addressBookAddressesListSelector = createSelector([addressBookSelector], (addressBook): string[] =>
-  addressBook.map(({ address }) => address),
+export const addressBookAddressesListSelector = createSelector(
+  [addressBookSelector],
+  (addressBook): ChecksumAddress[] => addressBook.map(({ address }) => address),
 )
 
 type GetNameParams = Overwrite<AddressBookEntry, { name?: string }>

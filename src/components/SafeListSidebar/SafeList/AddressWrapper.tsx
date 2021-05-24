@@ -7,10 +7,11 @@ import styled from 'styled-components'
 import { safeNameSelector } from 'src/logic/safe/store/selectors'
 import { formatAmount } from 'src/logic/tokens/utils/formatAmount'
 import { sameAddress } from 'src/logic/wallets/ethAddresses'
+import { ChecksumAddress } from 'src/utils/checksumAddress'
 import DefaultBadge from './DefaultBadge'
 import { SafeRecordProps } from 'src/logic/safe/store/models/safe'
 import { DefaultSafe } from 'src/routes/safe/store/reducer/types/safe'
-import setDefaultSafe from 'src/logic/safe/store/actions/setDefaultSafe'
+import { setDefaultSafe } from 'src/logic/safe/store/actions/setDefaultSafe'
 import { getNetworkInfo } from 'src/config'
 
 const StyledButtonLink = styled(ButtonLink)`
@@ -58,13 +59,13 @@ export const AddressWrapper = ({ safe, defaultSafe }: Props): ReactElement => {
   const dispatch = useDispatch()
   const safeName = useSelector((state) => safeNameSelector(state, safe.address))
 
-  const setDefaultSafeAction = (safeAddress: string) => {
+  const setDefaultSafeAction = (safeAddress: ChecksumAddress) => {
     dispatch(setDefaultSafe(safeAddress))
   }
 
   return (
     <div className={classes.wrapper}>
-      <EthHashInfo hash={safe.address} name={safeName} showAvatar shortenHash={4} />
+      <EthHashInfo hash={safe.address.toString()} name={safeName} showAvatar shortenHash={4} />
 
       <div className={classes.addressDetails}>
         <Text size="xl">{`${formatAmount(safe.ethBalance)} ${nativeCoin.name}`}</Text>

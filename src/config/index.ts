@@ -1,6 +1,7 @@
 import memoize from 'lodash.memoize'
 
 import networks from 'src/config/networks'
+import { ChecksumAddress } from 'src/utils/checksumAddress'
 import {
   EnvironmentSettings,
   ETHEREUM_NETWORK,
@@ -83,12 +84,13 @@ export const getGasPriceOracle = (): GasPriceOracle | undefined => getConfig()?.
 export const getRpcServiceUrl = (): string =>
   usesInfuraRPC ? `${getConfig().rpcServiceUrl}/${INFURA_TOKEN}` : getConfig().rpcServiceUrl
 
-export const getSafeClientGatewayBaseUrl = (safeAddress: string) => `${getClientGatewayUrl()}/safes/${safeAddress}`
+export const getSafeClientGatewayBaseUrl = (safeAddress: ChecksumAddress) =>
+  `${getClientGatewayUrl()}/safes/${safeAddress}`
 
 export const getTxDetailsUrl = (clientGatewayTxId: string) =>
   `${getClientGatewayUrl()}/transactions/${clientGatewayTxId}`
 
-export const getSafeServiceBaseUrl = (safeAddress: string) => `${getTxServiceUrl()}/safes/${safeAddress}`
+export const getSafeServiceBaseUrl = (safeAddress: ChecksumAddress) => `${getTxServiceUrl()}/safes/${safeAddress}`
 
 export const getTokensServiceBaseUrl = () => `${getTxServiceUrl()}/tokens`
 

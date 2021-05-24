@@ -6,10 +6,10 @@ import { ZERO_ADDRESS } from 'src/logic/wallets/ethAddresses'
 import { generateSignaturesFromTxConfirmations } from 'src/logic/safe/safeTxSigner'
 import { fetchSafeTxGasEstimation } from 'src/logic/safe/api/fetchSafeTxGasEstimation'
 import { Confirmation } from 'src/logic/safe/store/models/types/confirmation'
-import { checksumAddress } from 'src/utils/checksumAddress'
+import { ChecksumAddress, checksumAddress } from 'src/utils/checksumAddress'
 
 type SafeTxGasEstimationProps = {
-  safeAddress: string
+  safeAddress: ChecksumAddress
   txData: string
   txRecipient: string
   txAmount: string
@@ -23,10 +23,19 @@ export const estimateSafeTxGas = async ({
   txAmount,
   operation,
 }: SafeTxGasEstimationProps): Promise<number> => {
+  let to: ChecksumAddress
+
+  try {
+    to = checksumAddress(txRecipient)
+  } catch (error) {
+    console.error('ADDRESS - Failed to checksum `to` address', error.message)
+    throw error
+  }
+
   try {
     const safeTxGasEstimation = await fetchSafeTxGasEstimation({
       safeAddress,
-      to: checksumAddress(txRecipient),
+      to,
       value: txAmount,
       data: txData,
       operation,
@@ -41,7 +50,7 @@ export const estimateSafeTxGas = async ({
 
 type TransactionEstimationProps = {
   txData: string
-  safeAddress: string
+  safeAddress: ChecksumAddress
   txRecipient: string
   txConfirmations?: List<Confirmation>
   txAmount: string
@@ -106,7 +115,7 @@ export const estimateTransactionGasLimit = async ({
 
 type TransactionExecutionEstimationProps = {
   txData: string
-  safeAddress: string
+  safeAddress: ChecksumAddress
   txRecipient: string
   txConfirmations?: List<Confirmation>
   txAmount: string
@@ -145,7 +154,7 @@ const estimateGasForTransactionExecution = async ({
   return calculateGasOf({
     data: estimationData,
     from,
-    to: safeAddress,
+    to: safeAddress.toString(),
   })
 }
 
@@ -178,7 +187,7 @@ export const checkTransactionExecution = async ({
 }
 
 type TransactionApprovalEstimationProps = {
-  safeAddress: string
+  safeAddress: ChecksumAddress
   txRecipient: string
   txAmount: string
   txData: string
@@ -212,6 +221,6 @@ export const estimateGasForTransactionApproval = async ({
   return calculateGasOf({
     data: approveTransactionTxData,
     from,
-    to: safeAddress,
+    to: safeAddress.toString(),
   })
 }

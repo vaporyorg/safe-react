@@ -3,7 +3,7 @@ import { getRpcServiceUrl } from 'src/config'
 
 let unstoppableResolver
 
-export const getAddressFromUnstoppableDomain = (name: string) => {
+export const getAddressFromUnstoppableDomain = (name: string): Promise<string> => {
   if (!unstoppableResolver) {
     unstoppableResolver = new UnstoppableResolution({
       blockchain: {

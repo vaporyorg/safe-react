@@ -7,7 +7,7 @@ import { sameAddress } from 'src/logic/wallets/ethAddresses'
 import { AppReduxState } from 'src/store'
 import { Overwrite } from 'src/types/helpers'
 import { getNetworkName } from 'src/config'
-import { checksumAddress } from 'src/utils/checksumAddress'
+import { ChecksumAddress, checksumAddress } from 'src/utils/checksumAddress'
 import { removeFromStorage } from 'src/utils/storage'
 
 export type OldAddressBookEntry = {
@@ -28,13 +28,18 @@ type GetNameFromAddressBookOptions = {
 
 export const getNameFromAddressBook = (
   addressBook: AddressBookState,
-  userAddress: string,
+  userAddress?: ChecksumAddress,
   options?: GetNameFromAddressBookOptions,
 ): string | null => {
-  const entry = addressBook.find((addressBookItem) => addressBookItem.address === userAddress)
+  if (!userAddress) {
+    return null
+  }
+
+  const entry = addressBook.find((addressBookItem) => sameAddress(addressBookItem.address, userAddress))
   if (entry) {
     return options?.filterOnlyValidName ? getValidAddressBookName(entry.name) : entry.name
   }
+
   return null
 }
 
@@ -60,9 +65,10 @@ export const formatAddressListToAddressBookNames = (
     return []
   }
   return addresses.map((address) => {
-    const ownerName = getNameFromAddressBook(addressBook, address)
+    const accountAddress = checksumAddress(address)
+    const ownerName = getNameFromAddressBook(addressBook, accountAddress)
     return {
-      address: address,
+      address: accountAddress,
       name: ownerName || '',
       chainId: ETHEREUM_NETWORK.UNKNOWN,
     }
@@ -183,10 +189,11 @@ export const migrateSafeNames = ({
           }
 
           // create an entry for the AB
-          safesToAddressBook.push(makeAddressBookEntry({ address: safeAddress, name: safeName }))
+          const address = checksumAddress(safeAddress)
+          safesToAddressBook.push(makeAddressBookEntry({ address, name: safeName }))
 
           // return the new safe object without the name on it
-          return [safeAddress, safe]
+          return [address, safe]
         }),
     )
 
@@ -255,15 +262,22 @@ export const migrateAddressBook = ({
     parsedAddressBook = JSON.parse(parsedAddressBook)
   }
 
-  const migratedAddressBook = (parsedAddressBook as Omit<AddressBookEntry, 'chainId'>[])
+  const migratedAddressBook = (parsedAddressBook as Overwrite<Omit<AddressBookEntry, 'chainId'>, { address: string }>[])
     // exclude those addresses with invalid names
     .filter(({ name }) => isValidAddressBookName(name))
-    .map(({ address, ...entry }) =>
-      makeAddressBookEntry({
-        address: checksumAddress(address),
-        ...entry,
-      }),
-    )
+    .map(({ address, ...entry }) => {
+      try {
+        const checksummedAddress = checksumAddress(address)
+        return makeAddressBookEntry({
+          address: checksummedAddress,
+          ...entry,
+        })
+      } catch (error) {
+        console.error('ADDRESS - failed to checksum address', address, error.message)
+      }
+    })
+    // filter out invalid entries
+    .filter((entry) => !!entry)
 
   try {
     localStorage.setItem(`${namespace}${namespaceSeparator}${state}`, JSON.stringify(migratedAddressBook))

@@ -25,6 +25,7 @@ import { NFTToken } from 'src/logic/collectibles/sources/collectibles.d'
 import { getExplorerInfo } from 'src/config'
 import { sameAddress } from 'src/logic/wallets/ethAddresses'
 import { sameString } from 'src/utils/strings'
+import { ChecksumAddress } from '../../../../../../../utils/checksumAddress'
 
 import { CollectibleSelectField } from './CollectibleSelectField'
 import { styles } from './style'
@@ -70,7 +71,7 @@ const SendCollectible = ({
   const nftAssets = useSelector(nftAssetsSelector)
   const nftTokens = useSelector(nftTokensSelector)
   const addressBook = useSelector(addressBookSelector)
-  const [selectedEntry, setSelectedEntry] = useState<{ address: string; name: string } | null>(() => {
+  const [selectedEntry, setSelectedEntry] = useState<{ address: ChecksumAddress; name: string } | null>(() => {
     const defaultEntry = { address: '', name: '' }
 
     // if there's nothing to lookup for, we return the default entry
@@ -104,7 +105,7 @@ const SendCollectible = ({
   const handleSubmit = (values: SendCollectibleTxInfo) => {
     // If the input wasn't modified, there was no mutation of the recipientAddress
     if (!values.recipientAddress) {
-      values.recipientAddress = selectedEntry?.address
+      values.recipientAddress = selectedEntry?.address?.toString()
     }
 
     values.assetName = nftAssets[values.assetAddress].name

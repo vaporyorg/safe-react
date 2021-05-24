@@ -1,9 +1,10 @@
 import { Record, RecordOf } from 'immutable'
 
+import { ChecksumAddress } from 'src/utils/checksumAddress'
 import { FEATURES } from 'src/config/networks/network.d'
 import { BalanceRecord } from 'src/logic/tokens/store/actions/fetchSafeTokens'
 
-export type SafeOwner = string
+export type SafeOwner = ChecksumAddress
 
 export type ModulePair = [
   // previous module
@@ -23,7 +24,7 @@ export type SpendingLimit = {
 }
 
 export type SafeRecordProps = {
-  address: string
+  address: ChecksumAddress
   threshold: number
   ethBalance: string
   totalFiatBalance: string

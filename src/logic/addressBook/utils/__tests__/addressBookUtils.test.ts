@@ -4,17 +4,18 @@ import {
   isValidAddressBookName,
 } from 'src/logic/addressBook/utils'
 import { AddressBookEntry, AddressBookState, makeAddressBookEntry } from 'src/logic/addressBook/model/addressBook'
+import { checksumAddress } from '../../../../utils/checksumAddress'
 
 const getMockAddressBookEntry = (address: string, name: string = 'test'): AddressBookEntry =>
   makeAddressBookEntry({
-    address,
+    address: checksumAddress(address),
     name,
   })
 
 describe('getNameFromSafeAddressBook', () => {
-  const entry1 = getMockAddressBookEntry('123456', 'test1')
-  const entry2 = getMockAddressBookEntry('78910', 'test2')
-  const entry3 = getMockAddressBookEntry('4781321', 'test3')
+  const entry1 = getMockAddressBookEntry('0x0000000000000000000000000000000000000001', 'test1')
+  const entry2 = getMockAddressBookEntry('0x0000000000000000000000000000000000000002', 'test2')
+  const entry3 = getMockAddressBookEntry('0x0000000000000000000000000000000000000003', 'test3')
   it('It should returns the user name given a safeAddressBook and an user account', () => {
     // given
     const safeAddressBook = [entry1, entry2, entry3]

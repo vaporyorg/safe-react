@@ -41,6 +41,7 @@ import { fromTokenUnit } from 'src/logic/tokens/utils/humanReadableValue'
 import { extendedSafeTokensSelector } from 'src/routes/safe/container/selector'
 import { safeSpendingLimitsSelector } from 'src/logic/safe/store/selectors'
 import { sameString } from 'src/utils/strings'
+import { ChecksumAddress } from '../../../../../../../utils/checksumAddress'
 
 import { styles } from './style'
 import { EthHashInfo } from '@gnosis.pm/safe-react-components'
@@ -100,7 +101,7 @@ const SendFunds = ({
   const tokens = useSelector(extendedSafeTokensSelector)
   const addressBook = useSelector(addressBookSelector)
   const { nativeCoin } = getNetworkInfo()
-  const [selectedEntry, setSelectedEntry] = useState<{ address: string; name: string } | null>(() => {
+  const [selectedEntry, setSelectedEntry] = useState<{ address: ChecksumAddress; name: string } | null>(() => {
     const defaultEntry = { address: recipientAddress || '', name: '' }
 
     // if there's nothing to lookup for, we return the default entry

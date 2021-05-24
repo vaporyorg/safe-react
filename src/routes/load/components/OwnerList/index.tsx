@@ -106,7 +106,12 @@ const OwnerListComponent = (props) => {
                 </Col>
                 <Col xs={8}>
                   <Row className={classes.ownerAddresses}>
-                    <EthHashInfo hash={address} showAvatar showCopyBtn explorerUrl={getExplorerInfo(address)} />
+                    <EthHashInfo
+                      hash={address.toString()}
+                      showAvatar
+                      showCopyBtn
+                      explorerUrl={getExplorerInfo(address.toString())}
+                    />
                   </Row>
                 </Col>
               </Row>

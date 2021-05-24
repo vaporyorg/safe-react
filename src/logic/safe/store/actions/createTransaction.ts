@@ -31,13 +31,14 @@ import { AppReduxState } from 'src/store'
 import { Dispatch, DispatchReturn } from './types'
 import { checkIfOffChainSignatureIsPossible, getPreValidatedSignatures } from 'src/logic/safe/safeTxSigner'
 import { TxParameters } from 'src/routes/safe/container/hooks/useTransactionParameters'
+import { ChecksumAddress } from 'src/utils/checksumAddress'
 
 export interface CreateTransactionArgs {
   navigateToTransactionsTab?: boolean
   notifiedTransaction: string
   operation?: number
   origin?: string | null
-  safeAddress: string
+  safeAddress: ChecksumAddress
   to: string
   txData?: string
   txNonce?: number | string

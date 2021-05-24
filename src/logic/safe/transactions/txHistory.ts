@@ -2,7 +2,7 @@ import axios from 'axios'
 
 import { GnosisSafe } from 'src/types/contracts/GnosisSafe.d'
 import { getSafeServiceBaseUrl } from 'src/config'
-import { checksumAddress } from 'src/utils/checksumAddress'
+import { ChecksumAddress, checksumAddress } from 'src/utils/checksumAddress'
 
 const calculateBodyFrom = async (
   safeInstance: GnosisSafe,
@@ -44,9 +44,8 @@ const calculateBodyFrom = async (
   }
 }
 
-export const buildTxServiceUrl = (safeAddress: string): string => {
-  const address = checksumAddress(safeAddress)
-  return `${getSafeServiceBaseUrl(address)}/multisig-transactions/?has_confirmations=True`
+export const buildTxServiceUrl = (safeAddress: ChecksumAddress): string => {
+  return `${getSafeServiceBaseUrl(safeAddress)}/multisig-transactions/?has_confirmations=True`
 }
 
 const SUCCESS_STATUS = 201 // CREATED status

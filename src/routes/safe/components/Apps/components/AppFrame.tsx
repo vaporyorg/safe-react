@@ -6,7 +6,11 @@ import { useHistory } from 'react-router-dom'
 import { useSelector } from 'react-redux'
 import { INTERFACE_MESSAGES, Transaction, RequestId, LowercaseNetworks } from '@gnosis.pm/safe-apps-sdk-v1'
 
-import { safeEthBalanceSelector, safeParamAddressFromStateSelector } from 'src/logic/safe/store/selectors'
+import {
+  safeEthBalanceSelector,
+  safeNameSelector,
+  safeParamAddressFromStateSelector,
+} from 'src/logic/safe/store/selectors'
 import { useSafeName } from 'src/logic/addressBook/hooks/useSafeName'
 import { grantedSelector } from 'src/routes/safe/container/selector'
 import { getNetworkId, getNetworkName, getTxServiceUrl } from 'src/config'
@@ -84,7 +88,7 @@ const AppFrame = ({ appUrl }: Props): ReactElement => {
   const granted = useSelector(grantedSelector)
   const safeAddress = useSelector(safeParamAddressFromStateSelector)
   const ethBalance = useSelector(safeEthBalanceSelector)
-  const safeName = useSafeName(safeAddress)
+  const safeName = useSelector((state) => safeNameSelector(state, safeAddress))
   const { trackEvent } = useAnalytics()
   const history = useHistory()
   const { consentReceived, onConsentReceipt } = useLegalConsent()
@@ -139,7 +143,7 @@ const AppFrame = ({ appUrl }: Props): ReactElement => {
 
   const onIframeLoad = useCallback(() => {
     const iframe = iframeRef.current
-    if (!iframe || !isSameURL(iframe.src, appUrl as string)) {
+    if (!iframe || !isSameURL(iframe.src, appUrl as string) || !safeAddress) {
       return
     }
 
@@ -147,7 +151,7 @@ const AppFrame = ({ appUrl }: Props): ReactElement => {
     sendMessageToIframe({
       messageId: INTERFACE_MESSAGES.ON_SAFE_INFO,
       data: {
-        safeAddress: safeAddress as string,
+        safeAddress: safeAddress.toString(),
         network: NETWORK_NAME.toLowerCase() as LowercaseNetworks,
         ethBalance: ethBalance as string,
       },
@@ -297,18 +301,20 @@ const AppFrame = ({ appUrl }: Props): ReactElement => {
         />
       </StyledCard>
 
-      <ConfirmTxModal
-        isOpen={confirmTransactionModal.isOpen}
-        app={safeApp as SafeApp}
-        safeAddress={safeAddress}
-        ethBalance={ethBalance as string}
-        safeName={safeName as string}
-        txs={confirmTransactionModal.txs}
-        onClose={closeConfirmationModal}
-        onUserConfirm={onUserTxConfirm}
-        params={confirmTransactionModal.params}
-        onTxReject={onTxReject}
-      />
+      {safeAddress && (
+        <ConfirmTxModal
+          isOpen={confirmTransactionModal.isOpen}
+          app={safeApp as SafeApp}
+          safeAddress={safeAddress}
+          ethBalance={ethBalance as string}
+          safeName={safeName as string}
+          txs={confirmTransactionModal.txs}
+          onClose={closeConfirmationModal}
+          onUserConfirm={onUserTxConfirm}
+          params={confirmTransactionModal.params}
+          onTxReject={onTxReject}
+        />
+      )}
     </AppWrapper>
   )
 }

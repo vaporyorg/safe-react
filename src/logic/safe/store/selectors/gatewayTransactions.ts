@@ -15,7 +15,9 @@ export const historyTransactions = createHashBasedSelector(
   gatewayTransactions,
   safeParamAddressFromStateSelector,
   (gatewayTransactions, safeAddress): StoreStructure['history'] | undefined => {
-    return gatewayTransactions[safeAddress]?.history
+    if (safeAddress) {
+      return gatewayTransactions[safeAddress.toString()]?.history
+    }
   },
 )
 
@@ -23,7 +25,9 @@ export const pendingTransactions = createSelector(
   gatewayTransactions,
   safeParamAddressFromStateSelector,
   (gatewayTransactions, safeAddress): StoreStructure['queued'] | undefined => {
-    return gatewayTransactions[safeAddress]?.queued
+    if (safeAddress) {
+      return gatewayTransactions[safeAddress.toString()]?.queued
+    }
   },
 )
 
@@ -53,7 +57,7 @@ const getTransactionsByLocation = createHashBasedSelector(
   (gatewayTransactions, safeAddress) => (rest: TxByLocationAttr): TxByLocation => ({
     attributeName: rest.attributeName,
     attributeValue: rest.attributeValue,
-    transactions: get(gatewayTransactions[safeAddress], rest.txLocation),
+    transactions: safeAddress ? get(gatewayTransactions[safeAddress.toString()], rest.txLocation) : undefined,
   }),
 )
 

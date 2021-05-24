@@ -5,6 +5,7 @@ import { ETHEREUM_NETWORK } from 'src/config/networks/network.d'
 import { Collectibles, NFTAssets, NFTTokens, OpenSeaAssets } from 'src/logic/collectibles/sources/collectibles.d'
 import NFTIcon from 'src/routes/safe/components/Balances/assets/nft_icon.png'
 import { OPENSEA_API_KEY } from 'src/utils/constants'
+import { ChecksumAddress } from '../../../utils/checksumAddress'
 
 class OpenSea {
   _rateLimit = async (): Promise<void> => {}
@@ -82,10 +83,10 @@ class OpenSea {
   /**
    * Fetches from OpenSea the list of collectibles, grouped by category,
    * for the provided Safe Address in the specified Network
-   * @param {string} safeAddress
+   * @param {ChecksumAddress} safeAddress
    * @returns {Promise<Collectibles>}
    */
-  async fetchCollectibles(safeAddress: string): Promise<Collectibles> {
+  async fetchCollectibles(safeAddress: ChecksumAddress): Promise<Collectibles> {
     const metadataSourceUrl = this._endpointsUrls[getNetworkId()]
     const url = `${metadataSourceUrl}/assets/?owner=${safeAddress}`
     const assetsResponse = await this._fetch(url)

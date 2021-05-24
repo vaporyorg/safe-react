@@ -12,6 +12,7 @@ import { GnosisSafeProxyFactory } from 'src/types/contracts/GnosisSafeProxyFacto
 import { AllowanceModule } from 'src/types/contracts/AllowanceModule.d'
 import { getSafeInfo, SafeInfo } from 'src/logic/safe/utils/safeInformation'
 import { SPENDING_LIMIT_MODULE_ADDRESS } from 'src/utils/constants'
+import { ChecksumAddress } from '../../utils/checksumAddress'
 
 import SpendingLimitModule from './artifacts/AllowanceModule.json'
 
@@ -126,9 +127,9 @@ export const estimateGasForDeployingSafe = async (
   }).then((value) => value * 2)
 }
 
-export const getGnosisSafeInstanceAt = (safeAddress: string): GnosisSafe => {
+export const getGnosisSafeInstanceAt = (safeAddress: ChecksumAddress): GnosisSafe => {
   const web3 = getWeb3()
-  return (new web3.eth.Contract(GnosisSafeSol.abi as AbiItem[], safeAddress) as unknown) as GnosisSafe
+  return (new web3.eth.Contract(GnosisSafeSol.abi as AbiItem[], safeAddress.toString()) as unknown) as GnosisSafe
 }
 
 /**

@@ -1,17 +1,17 @@
 import { List } from 'immutable'
-import { matchPath, RouteComponentProps } from 'react-router-dom'
+import { matchPath } from 'react-router-dom'
 import { createSelector } from 'reselect'
 
 import { getNetworkId } from 'src/config'
 import { SAFE_REDUCER_ID } from 'src/logic/safe/store/reducer/safe'
 import { AppReduxState } from 'src/store'
 
-import { checksumAddress } from 'src/utils/checksumAddress'
+import { ChecksumAddress, checksumAddress } from 'src/utils/checksumAddress'
 import { ETHEREUM_NETWORK } from 'src/config/networks/network'
 import { makeAddressBookEntry } from 'src/logic/addressBook/model/addressBook'
 import { addressBookMapSelector, addressBookSelector } from 'src/logic/addressBook/store/selectors'
 import makeSafe, { SafeRecord, SafeRecordProps } from 'src/logic/safe/store/models/safe'
-import { SAFELIST_ADDRESS, SAFE_PARAM_ADDRESS } from 'src/routes/routes'
+import { SAFELIST_ADDRESS } from 'src/routes/routes'
 import { SafesMap } from 'src/routes/safe/store/reducer/types/safe'
 import { BalanceRecord } from 'src/logic/tokens/store/actions/fetchSafeTokens'
 import { sameAddress } from 'src/logic/wallets/ethAddresses'
@@ -34,7 +34,7 @@ export const safesListWithAddressBookNameSelector = createSelector(
     return safesList
       .map((safeRecord) => {
         const safe = safeRecord.toObject()
-        const name = addressBook[safe.address]
+        const name = addressBook[safe.address.toString()]
         return { ...safe, name }
       })
       .filter((safeRecord: SafeRecordWithName) => safeRecord.name)
@@ -42,8 +42,8 @@ export const safesListWithAddressBookNameSelector = createSelector(
 )
 
 export const safeNameSelector = createSelector(
-  [safesListWithAddressBookNameSelector, (_, safeName: string) => safeName],
-  (safes, safeAddress): string => {
+  [safesListWithAddressBookNameSelector, (_, safeAddress: ChecksumAddress | undefined) => safeAddress],
+  (safes, safeAddress: ChecksumAddress | undefined): string => {
     return safes.find((safe) => sameAddress(safe.address, safeAddress))?.name ?? ''
   },
 )
@@ -56,7 +56,7 @@ export const latestMasterContractVersionSelector = createSelector(safesStateSele
   safeState.get('latestMasterContractVersion'),
 )
 
-export const safeParamAddressFromStateSelector = (state: AppReduxState): string => {
+export const safeParamAddressFromStateSelector = (state: AppReduxState): ChecksumAddress | undefined => {
   const match = matchPath<{ safeAddress: string }>(state.router.location.pathname, {
     path: `${SAFELIST_ADDRESS}/:safeAddress`,
   })
@@ -64,16 +64,6 @@ export const safeParamAddressFromStateSelector = (state: AppReduxState): string 
   if (match) {
     return checksumAddress(match.params.safeAddress)
   }
-
-  return ''
-}
-
-export const safeParamAddressSelector = (
-  state: AppReduxState,
-  props: RouteComponentProps<{ [SAFE_PARAM_ADDRESS]?: string }>,
-): string => {
-  const urlAdd = props.match.params[SAFE_PARAM_ADDRESS]
-  return urlAdd ? checksumAddress(urlAdd) : ''
 }
 
 export const addressBookQueryParamsSelector = (state: AppReduxState): string | undefined => {
@@ -88,12 +78,12 @@ export const addressBookQueryParamsSelector = (state: AppReduxState): string | u
 export const safeSelector = createSelector(
   safesMapSelector,
   safeParamAddressFromStateSelector,
-  (safes: SafesMap, address: string): SafeRecord | undefined => {
+  (safes: SafesMap, address?: ChecksumAddress): SafeRecord | undefined => {
     if (!address) {
-      return undefined
+      return
     }
-    const checksumed = checksumAddress(address)
-    return safes.get(checksumed)
+
+    return safes.get(address.toString())
   },
 )
 

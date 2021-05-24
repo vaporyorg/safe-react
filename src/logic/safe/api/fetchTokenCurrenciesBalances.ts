@@ -2,7 +2,7 @@ import axios from 'axios'
 
 import { getSafeClientGatewayBaseUrl } from 'src/config'
 import { TokenProps } from 'src/logic/tokens/store/model/token'
-import { checksumAddress } from 'src/utils/checksumAddress'
+import { ChecksumAddress, checksumAddress } from 'src/utils/checksumAddress'
 
 export type TokenBalance = {
   tokenInfo: TokenProps
@@ -17,7 +17,7 @@ export type BalanceEndpoint = {
 }
 
 type FetchTokenCurrenciesBalancesProps = {
-  safeAddress: string
+  safeAddress: ChecksumAddress
   selectedCurrency: string
   excludeSpamTokens?: boolean
   trustedTokens?: boolean
@@ -30,7 +30,7 @@ export const fetchTokenCurrenciesBalances = async ({
   trustedTokens = false,
 }: FetchTokenCurrenciesBalancesProps): Promise<BalanceEndpoint> => {
   const url = `${getSafeClientGatewayBaseUrl(
-    checksumAddress(safeAddress),
+    safeAddress,
   )}/balances/${selectedCurrency}/?trusted=${trustedTokens}&exclude_spam=${excludeSpamTokens}`
 
   return axios.get(url).then(({ data }) => data)

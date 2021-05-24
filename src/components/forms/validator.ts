@@ -4,6 +4,7 @@ import { sameAddress } from 'src/logic/wallets/ethAddresses'
 import { getWeb3 } from 'src/logic/wallets/getWeb3'
 import { isFeatureEnabled } from 'src/config'
 import { FEATURES } from 'src/config/networks/network.d'
+import { ChecksumAddress } from '../../utils/checksumAddress'
 
 type ValidatorReturnType = string | undefined
 export type GenericValidatorType = (...args: unknown[]) => ValidatorReturnType
@@ -76,8 +77,8 @@ export const mustBeEthereumAddress = memoize(
 )
 
 export const mustBeEthereumContractAddress = memoize(
-  async (address: string): Promise<ValidatorReturnType> => {
-    const contractCode = await getWeb3().eth.getCode(address)
+  async (address: ChecksumAddress): Promise<ValidatorReturnType> => {
+    const contractCode = await getWeb3().eth.getCode(address as string)
 
     const errorMessage = `Must resolve to a valid smart contract address.`
 

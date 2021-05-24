@@ -5,6 +5,7 @@ import {
   TxServiceModel,
 } from 'src/logic/safe/store/actions/transactions/fetchTransactions/loadOutgoingTransactions'
 import { TypedDataUtils } from 'eth-sig-util'
+import { ChecksumAddress } from '../../../../../../utils/checksumAddress'
 
 export const isEmptyData = (data?: string | null): boolean => {
   return !data || data === EMPTY_DATA
@@ -31,7 +32,7 @@ export type BuildTx = BatchProcessTxsProps & {
 
 export type TxToMock = TxArgs & Partial<TxServiceModel>
 
-export function generateSafeTxHash(safeAddress: string, txArgs: TxArgs): string {
+export function generateSafeTxHash(safeAddress: ChecksumAddress, txArgs: TxArgs): string {
   const messageTypes = {
     EIP712Domain: [{ type: 'address', name: 'verifyingContract' }],
     SafeTx: [

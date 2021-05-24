@@ -25,10 +25,11 @@ import { AppReduxState } from 'src/store'
 import { getLocalStartOfDate } from 'src/utils/date'
 import { sameString } from 'src/utils/strings'
 import { sortObject } from 'src/utils/objects'
+import { ChecksumAddress } from '../../../../utils/checksumAddress'
 
 export const GATEWAY_TRANSACTIONS_ID = 'gatewayTransactions'
 
-type BasePayload = { safeAddress: string; isTail?: boolean }
+type BasePayload = { safeAddress: ChecksumAddress; isTail?: boolean }
 export type HistoryPayload = BasePayload & { values: HistoryGatewayResponse['results'] }
 export type QueuedPayload = BasePayload & { values: QueuedGatewayResponse['results'] }
 export type TransactionDetailsPayload = {
@@ -69,7 +70,7 @@ export const gatewayTransactions = handleActions<AppReduxState['gatewayTransacti
   {
     [ADD_HISTORY_TRANSACTIONS]: (state, action: Action<HistoryPayload>) => {
       const { safeAddress, values, isTail = false } = action.payload
-      const history: StoreStructure['history'] = Object.assign({}, state[safeAddress]?.history)
+      const history: StoreStructure['history'] = Object.assign({}, state[safeAddress.toString()]?.history)
 
       values.forEach((value) => {
         if (isDateLabel(value)) {
@@ -100,9 +101,9 @@ export const gatewayTransactions = handleActions<AppReduxState['gatewayTransacti
         // all the safes with their respective states
         ...state,
         // current safe
-        [safeAddress]: {
+        [safeAddress.toString()]: {
           // keep queued list
-          ...state[safeAddress],
+          ...state[safeAddress.toString()],
           // extend history list
           history: isTail ? history : sortObject(history, 'desc'),
         },
@@ -114,8 +115,8 @@ export const gatewayTransactions = handleActions<AppReduxState['gatewayTransacti
       // Thus, given the client-gateway page size of 20, we have plenty of "room" to be provided with
       // `next` and `queued` transactions in the first page.
       const { safeAddress, values } = action.payload
-      let next = Object.assign({}, state[safeAddress]?.queued?.next)
-      const queued = Object.assign({}, state[safeAddress]?.queued?.queued)
+      let next = Object.assign({}, state[safeAddress.toString()]?.queued?.next)
+      const queued = Object.assign({}, state[safeAddress.toString()]?.queued?.queued)
 
       let label: 'next' | 'queued' | undefined
       values.forEach((value) => {
@@ -234,9 +235,9 @@ export const gatewayTransactions = handleActions<AppReduxState['gatewayTransacti
         // all the safes with their respective states
         ...state,
         // current safe
-        [safeAddress]: {
+        [safeAddress.toString()]: {
           // keep history list
-          ...state[safeAddress],
+          ...state[safeAddress.toString()],
           // overwrites queued lists
           queued: {
             next,

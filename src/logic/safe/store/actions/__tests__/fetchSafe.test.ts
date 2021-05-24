@@ -10,6 +10,7 @@ import { SafeRecordProps } from 'src/logic/safe/store/models/safe'
 import { UPDATE_SAFE } from 'src/logic/safe/store/actions/updateSafe'
 import { DEFAULT_SAFE_INITIAL_STATE } from 'src/logic/safe/store/reducer/safe'
 import { inMemoryPartialSafeInformation, localSafesInfo, remoteSafeInfoWithoutModules } from '../mocks/safeInformation'
+import { checksumAddress } from 'src/utils/checksumAddress'
 
 jest.mock('axios')
 jest.mock('src/utils/storage/index')
@@ -77,7 +78,7 @@ describe('buildSafe', () => {
       throw new Error('-- test -- no resource available')
     })
     const finalValues: Partial<SafeRecordProps> = {
-      address: SAFE_ADDRESS,
+      address: checksumAddress(SAFE_ADDRESS),
       owners: undefined,
     }
     storageUtil.loadFromStorage.mockImplementationOnce(async () => undefined)

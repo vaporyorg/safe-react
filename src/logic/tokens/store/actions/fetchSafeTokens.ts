@@ -11,6 +11,7 @@ import { safeSelector } from 'src/logic/safe/store/selectors'
 import BigNumber from 'bignumber.js'
 import { currentCurrencySelector } from 'src/logic/currencyValues/store/selectors'
 import { ZERO_ADDRESS, sameAddress } from 'src/logic/wallets/ethAddresses'
+import { ChecksumAddress } from '../../../../utils/checksumAddress'
 
 export type BalanceRecord = {
   tokenAddress?: string
@@ -46,7 +47,7 @@ const extractDataFromResult = (
   return acc
 }
 
-export const fetchSafeTokens = (safeAddress: string, currencySelected?: string) => async (
+export const fetchSafeTokens = (safeAddress: ChecksumAddress, currencySelected?: string) => async (
   dispatch: Dispatch,
   getState: () => AppReduxState,
 ): Promise<void> => {

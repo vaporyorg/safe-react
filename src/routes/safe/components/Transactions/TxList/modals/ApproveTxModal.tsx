@@ -6,6 +6,7 @@ import { makeStyles } from '@material-ui/core/styles'
 import Close from '@material-ui/icons/Close'
 import React, { useMemo, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
+import { checksumAddress } from '../../../../../../utils/checksumAddress'
 
 import { styles } from './style'
 
@@ -157,13 +158,13 @@ const useTxInfo = (transaction: Props['transaction']) => {
     switch (t.current.txInfo.type) {
       case 'Transfer':
         if (t.current.txInfo.transferInfo.type === 'ETHER') {
-          return t.current.txInfo.recipient
+          return checksumAddress(t.current.txInfo.recipient)
         } else {
-          return t.current.txInfo.transferInfo.tokenAddress
+          return checksumAddress(t.current.txInfo.transferInfo.tokenAddress)
         }
         break
       case 'Custom':
-        return t.current.txInfo.to
+        return checksumAddress(t.current.txInfo.to)
         break
       case 'Creation':
       case 'SettingsChange':
@@ -256,7 +257,7 @@ export const ApproveTxModal = ({
     isOffChainSignature,
     isCreation,
   } = useEstimateTransactionGas({
-    txRecipient: to,
+    txRecipient: to?.toString() ?? '',
     txData: data,
     txConfirmations: confirmations,
     txAmount: value,
@@ -270,9 +271,13 @@ export const ApproveTxModal = ({
   const handleExecuteCheckbox = () => setApproveAndExecute((prevApproveAndExecute) => !prevApproveAndExecute)
 
   const approveTx = (txParameters: TxParameters) => {
+    if (!safeAddress || !to) {
+      return
+    }
+
     dispatch(
       processTransaction({
-        safeAddress,
+        safeAddress: safeAddress.toString(),
         tx: {
           id,
           baseGas,
@@ -286,7 +291,7 @@ export const ApproveTxModal = ({
           refundReceiver,
           safeTxGas,
           safeTxHash,
-          to,
+          to: to.toString(),
           value,
         },
         userAddress,

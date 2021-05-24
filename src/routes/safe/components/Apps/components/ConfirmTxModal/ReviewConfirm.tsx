@@ -87,7 +87,7 @@ export const ReviewConfirm = ({
   const isMultiSend = txs.length > 1
   const [decodedData, setDecodedData] = useState<DecodedData | null>(null)
   const dispatch = useDispatch()
-  const explorerUrl = getExplorerInfo(safeAddress)
+  const explorerUrl = getExplorerInfo(safeAddress.toString())
 
   const txRecipient: string | undefined = useMemo(() => (isMultiSend ? MULTI_SEND_ADDRESS : txs[0]?.to), [
     txs,

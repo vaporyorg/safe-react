@@ -5,6 +5,7 @@ import Modal from 'src/components/Modal'
 import { SafeApp } from 'src/routes/safe/components/Apps/types.d'
 import { TransactionParams } from 'src/routes/safe/components/Apps/components/AppFrame'
 import { mustBeEthereumAddress } from 'src/components/forms/validator'
+import { ChecksumAddress } from '../../../../../../utils/checksumAddress'
 import { SafeAppLoadError } from './SafeAppLoadError'
 import { ReviewConfirm } from './ReviewConfirm'
 import { DecodedDataParameterValue, DecodedData } from 'src/types/transactions/decode'
@@ -15,7 +16,7 @@ export type ConfirmTxModalProps = {
   app: SafeApp
   txs: Transaction[]
   params?: TransactionParams
-  safeAddress: string
+  safeAddress: ChecksumAddress
   safeName: string
   ethBalance: string
   onUserConfirm: (safeTxHash: string) => void

@@ -5,24 +5,25 @@ import { useSelector } from 'react-redux'
 import { getExplorerInfo, getNetworkId } from 'src/config'
 import { getNameFromAddressBookSelector } from 'src/logic/addressBook/store/selectors'
 import { sameString } from 'src/utils/strings'
+import { ChecksumAddress } from '../../../../../../utils/checksumAddress'
 
 import DataDisplay from './DataDisplay'
 
 const chainId = getNetworkId()
 
 interface AddressInfoProps {
-  address: string
+  address: ChecksumAddress
   title?: string
 }
 
 const AddressInfo = ({ address, title }: AddressInfoProps): ReactElement => {
   const name = useSelector((state) => getNameFromAddressBookSelector(state, { address, chainId }))
-  const explorerUrl = getExplorerInfo(address)
+  const explorerUrl = getExplorerInfo(address.toString())
 
   return (
     <DataDisplay title={title}>
       <EthHashInfo
-        hash={address}
+        hash={address.toString()}
         name={sameString(name, 'UNKNOWN') ? undefined : name}
         showCopyBtn
         showAvatar

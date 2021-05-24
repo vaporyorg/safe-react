@@ -8,9 +8,9 @@ import { SafeRecordProps } from 'src/logic/safe/store/models/safe'
 import { getSpendingLimits } from 'src/logic/safe/utils/spendingLimits'
 import { buildModulesLinkedList } from 'src/logic/safe/utils/modules'
 import { enabledFeatures, safeNeedsUpdate } from 'src/logic/safe/utils/safeVersion'
-import { checksumAddress } from 'src/utils/checksumAddress'
+import { ChecksumAddress, checksumAddress } from 'src/utils/checksumAddress'
 
-export const getLastTx = async (safeAddress: string): Promise<TxServiceModel | null> => {
+export const getLastTx = async (safeAddress: ChecksumAddress): Promise<TxServiceModel | null> => {
   try {
     const url = buildTxServiceUrl(safeAddress)
     const response = await axios.get(url, { params: { limit: 1 } })

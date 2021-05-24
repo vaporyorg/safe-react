@@ -20,7 +20,7 @@ export const getNotification = (
   userAddress: string,
   safes: SafesMap,
 ): undefined => {
-  const currentSafe = safes.get(safeAddress)
+  const currentSafe = safes.get(safeAddress.toString())
 
   // no notification if not in the current safe or if its not an owner
   if (!currentSafe || !isUserAnOwner(currentSafe, userAddress)) {

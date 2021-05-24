@@ -1,5 +1,7 @@
-import { SafeRecord, SafeRecordProps } from 'src/logic/safe/store/models/safe'
 import { Map } from 'immutable'
+
+import { SafeRecord, SafeRecordProps } from 'src/logic/safe/store/models/safe'
+import { ChecksumAddress } from 'src/utils/checksumAddress'
 
 export type SafesMap = Map<string, SafeRecord>
 
@@ -13,7 +15,7 @@ export interface SafeReducerState {
 }
 
 interface SafeReducerStateJSON {
-  defaultSafe: 'NOT_ASKED' | string | undefined
+  defaultSafe: 'NOT_ASKED' | ChecksumAddress | undefined
   safes: Record<string, SafeRecordProps>
   latestMasterContractVersion: string
   selectedCurrency: string

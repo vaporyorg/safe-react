@@ -130,7 +130,7 @@ export const useEstimateTransactionGas = ({
 
   useEffect(() => {
     const estimateGas = async () => {
-      if (!txData.length) {
+      if (!txData.length || !safeAddress) {
         return
       }
 

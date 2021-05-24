@@ -7,7 +7,7 @@ import { SET_LATEST_MASTER_CONTRACT_VERSION } from 'src/logic/safe/store/actions
 import { UPDATE_SAFE } from 'src/logic/safe/store/actions/updateSafe'
 import makeSafe, { SafeRecord, SafeRecordProps } from 'src/logic/safe/store/models/safe'
 import { AppReduxState } from 'src/store'
-import { checksumAddress } from 'src/utils/checksumAddress'
+import { ChecksumAddress, checksumAddress } from 'src/utils/checksumAddress'
 import { ADD_OR_UPDATE_SAFE } from 'src/logic/safe/store/actions/addOrUpdateSafe'
 import { sameAddress } from 'src/logic/wallets/ethAddresses'
 import { shouldSafeStoreBeUpdated } from 'src/logic/safe/utils/shouldSafeStoreBeUpdated'
@@ -63,7 +63,7 @@ type OwnerPayloads = BaseOwnerPayload | FullOwnerPayload | ReplaceOwnerPayload
 
 type SafeWithAddressPayload = SafeRecord & { safeAddress: string }
 
-type Payloads = SafePayloads | OwnerPayloads | SafeWithAddressPayload
+type Payloads = SafePayloads | OwnerPayloads | SafeWithAddressPayload | ChecksumAddress
 
 export default handleActions<AppReduxState['safes'], Payloads>(
   {
@@ -110,7 +110,7 @@ export default handleActions<AppReduxState['safes'], Payloads>(
 
       return newState
     },
-    [SET_DEFAULT_SAFE]: (state, action: Action<SafeRecord>) => state.set('defaultSafe', action.payload),
+    [SET_DEFAULT_SAFE]: (state, action: Action<ChecksumAddress>) => state.set('defaultSafe', action.payload),
     [SET_LATEST_MASTER_CONTRACT_VERSION]: (state, action: Action<SafeRecord>) =>
       state.set('latestMasterContractVersion', action.payload),
   },

@@ -1,4 +1,7 @@
 import axios, { AxiosResponse } from 'axios'
+
+import { ChecksumAddress } from 'src/utils/checksumAddress'
+
 import { buildSafeInformationUrl } from './buildSafeInformationUrl'
 
 type AddressValue = {
@@ -27,7 +30,7 @@ export type SafeInfoError = {
   arguments: string[]
 }
 
-export const getSafeInfo = (safeAddress: string): Promise<SafeInfo> => {
+export const getSafeInfo = (safeAddress: ChecksumAddress): Promise<SafeInfo> => {
   const safeInfoUrl = buildSafeInformationUrl(safeAddress)
   return axios.get<SafeInfo, AxiosResponse<SafeInfo>>(safeInfoUrl).then((response) => response.data)
 }

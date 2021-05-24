@@ -1,8 +1,7 @@
 import { getSafeClientGatewayBaseUrl } from 'src/config'
-import { checksumAddress } from 'src/utils/checksumAddress'
+import { ChecksumAddress } from 'src/utils/checksumAddress'
 
-export const buildSafeInformationUrl = (safeAddress: string): string => {
-  const address = checksumAddress(safeAddress)
-  const url = getSafeClientGatewayBaseUrl(address)
+export const buildSafeInformationUrl = (safeAddress: ChecksumAddress): string => {
+  const url = getSafeClientGatewayBaseUrl(safeAddress)
   return `${url}/`
 }
